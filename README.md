@@ -16,4 +16,4 @@ XSSLECTION has a debug mode as well. To enable the debug mode just use `-v`.
 
 At last all the results will be saved in `reflected.txt`.
 
-Feel free to comment if you face any error or have any feature to add.
+Feel free to comment if you face any error or have any feature to suggest.
