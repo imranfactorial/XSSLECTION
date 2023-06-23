@@ -2,4 +2,7 @@
 
 
 <h1>How to use XSSLECTION</h1>
-`cat urls.txt | python3 xsslection.py`
+
+```
+cat urls.txt | python3 xsslection.py
+```
