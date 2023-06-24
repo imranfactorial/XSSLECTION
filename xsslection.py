@@ -62,32 +62,8 @@ def test_reflection(url, parameter, placeholder, verbose=False, reflected_urls=N
                     print(f"Reflection found in parameter '{parameter}': {url}")
                     if reflected_urls is not None:
                         reflected_urls.append(url)
-    except (requests.exceptions.RequestException, requests.exceptions.Timeout):
-        try:
-            requestAgain = requests.get(url, headers=headers, verify=False, timeout=5)
-            if requestAgain.status_code == 200:
-                if verbose:
-                    print(f"Debug: Testing URL: {url}")
-                full_response = requests.get(url, headers=headers, verify=False, timeout=60)
-                content = full_response.content
-
-                try:
-                    json_content = json.loads(content)
-                    if placeholder in json.dumps(json_content):
-                        print(f"Possible false positive in JSON response of URL: {url}")
-                except json.JSONDecodeError:
-                    if placeholder.encode() in content:
-                        print(f"Reflection found in parameter '{parameter}': {url}")
-                        if reflected_urls is not None:
-                            reflected_urls.append(url)
-            else:
-                if verbose:
-                    print(f"Debug: Skipping URL: {url}")
-                return
-        except (requests.exceptions.RequestException, requests.exceptions.Timeout):
-            if verbose:
-                print(f"Debug: Skipping URL: {url}")
-            return
+    except (requests.exceptions.RequestException, requests.exceptions.Timeout, UnicodeDecodeError):
+        pass
 
 def process_url(url, parameter, placeholder, verbose=False, reflected_urls=None):
     replaced_url = replace_parameter(url, parameter, placeholder)
@@ -113,16 +89,22 @@ def process_urls(urls, placeholder, verbose=False):
 
 def main(verbose=False):
     urls = []
-    placeholder = '"><xsslection>'
-    for line in sys.stdin:
-        url = line.strip()
-        urls.append(url)
+    placeholder = '"><imran>'
+    try:
+        for line in sys.stdin:
+            url = line.strip()
+            urls.append(url)
 
-    reflected_urls = process_urls(urls, placeholder, verbose)
+        reflected_urls = process_urls(urls, placeholder, verbose)
 
-    if reflected_urls:
-        with open("reflected.txt", "a") as file:
-            file.write("\n".join(reflected_urls) + "\n")
+        if reflected_urls:
+            with open("reflected.txt", "a") as file:
+                file.write("\n".join(reflected_urls) + "\n")
+    except KeyboardInterrupt:
+        sys.exit(0)
+    except Exception as e:
+        print(f"An error occurred:\n{str(e)}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     verbose_mode = "-v" in sys.argv[1:]
