@@ -89,7 +89,7 @@ def process_urls(urls, placeholder, verbose=False):
 
 def main(verbose=False):
     urls = []
-    placeholder = '"><xssleaction>'
+    placeholder = '"><xsslection>'
     try:
         for line in sys.stdin:
             url = line.strip()
